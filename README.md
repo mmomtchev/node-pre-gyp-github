@@ -68,3 +68,12 @@ node-pre-gyp build
 node-pre-gyp package
 node-pre-gyp-github publish --release
 ```
+
+## License
+
+Copyright &copy; 2015–2016 [Bill Christo](https://github.com/bchr02) & [Contributors](https://github.com/bchr02/node-pre-gyp-github/graphs/contributors)
+
+Copyright &copy; 2021 [Momtchil Momtchev, @mmomtchev](https://github.com/mmomtchev) & [Contributors](https://github.com/mmomtchev/node-pre-gyp-github/graphs/contributors)
+
+Licensed under the MIT License
+
