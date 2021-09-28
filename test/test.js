@@ -49,7 +49,7 @@ describe('Publishes packages to GitHub Releases', function () {
             fs.promises.readdir = function () {
                 return Promise.resolve(['filename']);
             };
-            fs.createReadStream = function () {
+            fs.promises.readFile = function () {
                 return {};
             };
             console.log = function () {};

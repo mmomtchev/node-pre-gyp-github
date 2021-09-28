@@ -92,7 +92,7 @@ NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
         release_id: this.release.id,
         repo: this.repo,
         name: cfg.fileName,
-        data: fs.createReadStream(cfg.filePath)
+        data: await fs.promises.readFile(cfg.filePath)
     });
 
     consoleLog(
