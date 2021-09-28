@@ -7,7 +7,10 @@
   "scripts": {
     "lint": "eslint index.js test/test.js bin/node-pre-gyp-github.js",
     "test": "nyc --reporter=lcov --reporter=text mocha",
-    "codecov": "curl -s https://codecov.io/bash | bash"
+    "codecov": "curl -s https://codecov.io/bash | bash",
+    "preversion": "npm run test",
+    "version": "git add package.json",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
