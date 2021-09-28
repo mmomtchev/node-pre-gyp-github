@@ -1,16 +1,17 @@
 {
-  "name": "node-pre-gyp-github",
-  "version": "1.4.3",
+  "name": "@mmomtchev/node-pre-gyp-github",
+  "version": "2.0.0",
   "description": "A node-pre-gyp module which provides the ability to publish to GitHub releases.",
   "bin": "./bin/node-pre-gyp-github.js",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js test/test.js bin/node-pre-gyp-github.js",
     "test": "nyc --reporter=html --reporter=text mocha",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "codecov": "curl -s https://codecov.io/bash | bash"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bchr02/node-pre-gyp-github.git"
+    "url": "git+https://github.com/mmomtchev/node-pre-gyp-github.git"
   },
   "keywords": [
     "node-pre-gyp",
@@ -25,21 +26,32 @@
     "releases"
   ],
   "dependencies": {
-    "@octokit/rest": "^15.9.5",
-    "commander": "^2.17.0",
-    "mime-types": "^2.1.19"
+    "@octokit/rest": "^18.11.2",
+    "commander": "^8.2.0"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "coveralls": "^3.0.2",
-    "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
-    "sinon": "^6.1.4"
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-array-func": "^3.1.7",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "mocha": "^9.1.2",
+    "nyc": "^15.1.0",
+    "prettier": "^2.4.1",
+    "sinon": "^11.1.2"
   },
-  "author": "Bill Christo",
+  "contributors": [
+    "Bill Christo",
+    {
+      "name": "Momtchil Momtchev",
+      "url": "https://github.com/mmomtchev",
+      "email": "momtchil@momtchev.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bchr02/node-pre-gyp-github/issues"
+    "url": "https://github.com/mmomtchev/node-pre-gyp-github/issues"
   },
-  "homepage": "https://github.com/bchr02/node-pre-gyp-github#readme"
+  "homepage": "https://github.com/mmomtchev/node-pre-gyp-github#readme"
 }
