@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js test/test.js bin/node-pre-gyp-github.js",
-    "test": "nyc --reporter=html --reporter=text mocha",
+    "test": "nyc --reporter=lcov --reporter=text mocha",
     "codecov": "curl -s https://codecov.io/bash | bash"
   },
   "repository": {
