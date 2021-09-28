@@ -1,8 +1,8 @@
 # node-pre-gyp-github
 ##### A node-pre-gyp module which provides the ability to publish to GitHub releases.
 
-[![License: MIT](https://img.shields.io/github/license/mmomtchev/rlayers)](https://github.com/mmomtchev/rlayers/blob/master/LICENSE)
-[![npm version](https://img.shields.io/npm/v/rlayers)](https://www.npmjs.com/package/@mmomtchev/node-pre-gyp-github)
+[![License: MIT](https://img.shields.io/github/license/mmomtchev/node-pre-gyp-github)](https://github.com/mmomtchev/rlayers/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@mmomtchev/node-pre-gyp-github)](https://www.npmjs.com/package/@mmomtchev/node-pre-gyp-github)
 [![Node.js CI](https://github.com/mmomtchev/node-pre-gyp-github/actions/workflows/node.js.yml/badge.svg)](https://github.com/mmomtchev/node-pre-gyp-github/actions/workflows/node.js.yml)
 [![codecov](https://codecov.io/gh/mmomtchev/node-pre-gyp-github/branch/master/graph/badge.svg?token=OE1AXIYFIZ)](https://codecov.io/gh/mmomtchev/node-pre-gyp-github)
 
