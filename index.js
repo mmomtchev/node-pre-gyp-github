@@ -86,13 +86,15 @@ NodePreGypGithub.prototype.createRelease = async function (args) {
 };
 
 NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
+    const data = await fs.promises.readFile(cfg.filePath)
+    
     await this.octokit.repos.uploadReleaseAsset({
         origin: this.release.upload_url,
         owner: this.owner,
         release_id: this.release.id,
         repo: this.repo,
         name: cfg.fileName,
-        data: await fs.promises.readFile(cfg.filePath)
+        data
     });
 
     consoleLog(
@@ -116,6 +118,7 @@ NodePreGypGithub.prototype.uploadAssets = async function () {
     if (!files.length)
         throw new Error('No files found within the stage directory: ' + this.stage_dir);
 
+    const q = []
     for (const file of files) {
         if (this.release && this.release.assets) {
             asset = this.release.assets.filter(function (element) {
@@ -132,11 +135,12 @@ NodePreGypGithub.prototype.uploadAssets = async function () {
             }
         }
         consoleLog('Staged file ' + file + ' found. Proceeding to upload it.');
-        return this.uploadAsset({
+        q.push(this.uploadAsset({
             fileName: file,
             filePath: path.join(this.stage_dir, file)
-        });
+        }));
     }
+    return Promise.all(q);
 };
 
 NodePreGypGithub.prototype.publish = async function (options) {
