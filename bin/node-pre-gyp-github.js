@@ -15,7 +15,10 @@ program
             x = new module();
         opts.draft = options.release ? false : true;
         opts.verbose = options.silent ? false : true;
-        x.publish(opts).catch((e) => console.error(e));
+        x.publish(opts).catch((e) => {
+            console.error(e);
+            process.exit(1);
+        });
     });
 
 program.command('help', '', {isDefault: true, noHelp: true}).action(function () {
