@@ -16,8 +16,8 @@ NodePreGypGithub.prototype.stage_base_dir = path.join(cwd, 'build', 'stage');
 NodePreGypGithub.prototype.init = function () {
     let ownerRepo, hostPrefix;
 
-	const token = process.env.NODE_PRE_GYP_GITHUB_TOKEN;
-	if (!token) throw new Error('NODE_PRE_GYP_GITHUB_TOKEN environment variable not found');
+    const token = process.env.NODE_PRE_GYP_GITHUB_TOKEN;
+    if (!token) throw new Error('NODE_PRE_GYP_GITHUB_TOKEN environment variable not found');
 
     this.package_json = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json')));
 
@@ -53,7 +53,7 @@ NodePreGypGithub.prototype.init = function () {
     }
 
     this.octokit = new NodePreGypGithub.prototype.octokit({
-		auth: token,
+        auth: token,
         baseUrl: 'https://' + this.host,
         headers: {
             'user-agent': this.package_json.name ? this.package_json.name : 'node-pre-gyp-github'
@@ -86,16 +86,29 @@ NodePreGypGithub.prototype.createRelease = async function (args) {
 };
 
 NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
-    const data = await fs.promises.readFile(cfg.filePath)
-    
-    await this.octokit.repos.uploadReleaseAsset({
-        origin: this.release.upload_url,
-        owner: this.owner,
-        release_id: this.release.id,
-        repo: this.repo,
-        name: cfg.fileName,
-        data
-    });
+    const data = await fs.promises.readFile(cfg.filePath);
+
+    let lastErr;
+    let retries = 3;
+    do {
+        try {
+            await this.octokit.repos.uploadReleaseAsset({
+                origin: this.release.upload_url,
+                owner: this.owner,
+                release_id: this.release.id,
+                repo: this.repo,
+                name: cfg.fileName,
+                data
+            });
+            break;
+        } catch (e) {
+            retries--;
+            console.error('Failed uploading ', e);
+            console.error(`${retries} left`);
+            lastErr = e;
+        }
+    } while (retries > 0);
+    if (retries == 0) throw lastErr;
 
     consoleLog(
         'Staged file ' +
@@ -118,7 +131,7 @@ NodePreGypGithub.prototype.uploadAssets = async function () {
     if (!files.length)
         throw new Error('No files found within the stage directory: ' + this.stage_dir);
 
-    const q = []
+    const q = [];
     for (const file of files) {
         if (this.release && this.release.assets) {
             asset = this.release.assets.filter(function (element) {
@@ -135,10 +148,12 @@ NodePreGypGithub.prototype.uploadAssets = async function () {
             }
         }
         consoleLog('Staged file ' + file + ' found. Proceeding to upload it.');
-        q.push(this.uploadAsset({
-            fileName: file,
-            filePath: path.join(this.stage_dir, file)
-        }));
+        q.push(
+            this.uploadAsset({
+                fileName: file,
+                filePath: path.join(this.stage_dir, file)
+            })
+        );
     }
     return Promise.all(q);
 };
@@ -162,7 +177,7 @@ NodePreGypGithub.prototype.publish = async function (options) {
     } else {
         // This is here for backwards compatibility for before binary.remote_path support was added in version 1.2.0.
         options.tag_name = this.package_json.version;
-		this.stage_dir = this.stage_base_dir;
+        this.stage_dir = this.stage_base_dir;
     }
     const release = data.data.filter(function (element) {
         return element.tag_name === options.tag_name;

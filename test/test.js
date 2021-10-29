@@ -42,9 +42,10 @@ const reset_mocks = function () {
 
 describe('Publishes packages to GitHub Releases', function () {
     describe('Publishes without an error under all options', function () {
-		let log;
+		let log, err;
 		beforeEach(() => {
             log = console.log;
+            err = console.error;
             reset_mocks();
             fs.promises.readdir = function () {
                 return Promise.resolve(['filename']);
@@ -53,9 +54,11 @@ describe('Publishes packages to GitHub Releases', function () {
                 return {};
             };
             console.log = function () {};
+            console.error = function () {};
 		});
 		afterEach(() => {
             console.log = log;
+            console.error = err;
 		});
         describe('should publish without error in all scenarios', function () {
 			it('when a release already exists', () => {
@@ -103,6 +106,19 @@ describe('Publishes packages to GitHub Releases', function () {
     });
 
     describe('Throws an error when node-pre-gyp-github is not configured properly', function () {
+		let log, err;
+        beforeEach(() => {
+            log = console.log;
+            err = console.error;
+            reset_mocks();
+            console.log = function () {};
+            console.error = function () {};
+        });
+        afterEach(() => {
+            console.log = log;
+            console.error = err;
+        });
+
         it('should throw an error when missing repository.url in package.json', function () {
             const options = {draft: true, verbose: false};
             reset_mocks();
@@ -218,16 +234,19 @@ describe('Publishes packages to GitHub Releases', function () {
                 );
         });
 
-        it('should throw an error when github.releases.uploadAsset returns an error', function () {
+        it('should throw an error when github.releases.uploadAsset returns an error 3 times', function () {
             const options = {draft: true, verbose: false};
             reset_mocks();
             fs.promises.readdir = function () {
                 return Promise.resolve(['filename']);
             };
+            let counter = 0;
             octokit.repos.uploadReleaseAsset = function () {
+                counter++;
                 return Promise.reject(new Error('uploadAsset error'));
             };
-			return expect(index.publish(options)).to.be.rejectedWith('uploadAsset error');
+			return expect(index.publish(options)).to.be.rejectedWith('uploadAsset error')
+                .then(() => expect(counter).to.equal(3));
         });
     });
 
