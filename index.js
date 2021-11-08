@@ -16,8 +16,8 @@ NodePreGypGithub.prototype.stage_base_dir = path.join(cwd, 'build', 'stage');
 NodePreGypGithub.prototype.init = function () {
     let ownerRepo, hostPrefix;
 
-    const token = process.env.NODE_PRE_GYP_GITHUB_TOKEN;
-    if (!token) throw new Error('NODE_PRE_GYP_GITHUB_TOKEN environment variable not found');
+    this.token = process.env.NODE_PRE_GYP_GITHUB_TOKEN;
+    if (!this.token) throw new Error('NODE_PRE_GYP_GITHUB_TOKEN environment variable not found');
 
     this.package_json = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json')));
 
@@ -52,14 +52,18 @@ NodePreGypGithub.prototype.init = function () {
         throw new Error('binary.host in package.json should begin with: "' + hostPrefix + '"');
     }
 
+    this.connect();
+};
+
+NodePreGypGithub.prototype.connect = function () {
     this.octokit = new NodePreGypGithub.prototype.octokit({
-        auth: token,
+        auth: this.token,
         baseUrl: 'https://' + this.host,
         headers: {
             'user-agent': this.package_json.name ? this.package_json.name : 'node-pre-gyp-github'
         }
     });
-};
+}
 
 NodePreGypGithub.prototype.createRelease = async function (args) {
     const options = {
@@ -106,6 +110,7 @@ NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
             console.error('Failed uploading ', e);
             console.error(`${retries} left`);
             lastErr = e;
+            if (retries > 0) this.connect();
         }
     } while (retries > 0);
     if (retries == 0) throw lastErr;
