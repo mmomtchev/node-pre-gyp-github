@@ -90,17 +90,57 @@ NodePreGypGithub.prototype.createRelease = async function (args) {
     return this.octokit.repos.createRelease(options);
 };
 
+NodePreGypGithub.prototype.deletePartialAssets = async function () {
+    try {
+        const assets = await this.octokit.repos.listReleaseAssets({
+            origin: this.release.upload_url,
+            owner: this.owner,
+            release_id: this.release.id,
+            repo: this.repo
+        });
+        const partial = assets.data.filter((a) => a.state === 'starter');
+        for (const asset of partial)
+            await this.octokit.repos.deleteReleaseAsset({
+                origin: this.release.upload_url,
+                owner: this.owner,
+                release_id: this.release.id,
+                repo: this.repo,
+                asset_id: asset.asset_id
+            });
+    } catch (e) {
+        console.error('Failed deleting partial assets for ', e);
+    }
+};
+
 NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
     const data = await fs.promises.readFile(cfg.filePath);
 
-    await this.octokit.repos.uploadReleaseAsset({
-        origin: this.release.upload_url,
-        owner: this.owner,
-        release_id: this.release.id,
-        repo: this.repo,
-        name: cfg.fileName,
-        data
-    });
+    // Network errors leave an asset having a state of `starter`
+    // that will block further upload attempts
+
+    let lastErr;
+    let retries = 3;
+    do {
+        try {
+            await this.octokit.repos.uploadReleaseAsset({
+                origin: this.release.upload_url,
+                owner: this.owner,
+                release_id: this.release.id,
+                repo: this.repo,
+                name: cfg.fileName,
+                data
+            });
+            break;
+        } catch (e) {
+            retries--;
+            console.error('Failed uploading ', e);
+            console.error(`${retries} left`);
+            console.error('');
+            lastErr = e;
+            await this.deletePartialAssets();
+        }
+    } while (retries > 0);
+    if (retries == 0) throw lastErr;
 
     consoleLog(
         'Staged file ' +
