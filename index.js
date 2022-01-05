@@ -105,7 +105,7 @@ NodePreGypGithub.prototype.deletePartialAssets = async function () {
                 owner: this.owner,
                 release_id: this.release.id,
                 repo: this.repo,
-                asset_id: asset.asset_id
+                asset_id: asset.id
             });
     } catch (e) {
         console.error('Failed deleting partial assets for ', e);

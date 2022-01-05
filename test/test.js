@@ -41,8 +41,8 @@ const reset_mocks = function () {
     sandbox.stub(octokit.repos, 'listReleaseAssets').callsFake(function () {
         return Promise.resolve({
             data: [
-                {state: 'uploaded', asset_id: 1},
-                {state: 'starter', asset_id: 2}
+                {state: 'uploaded', id: 1},
+                {state: 'starter', id: 2}
             ]
         });
     });
