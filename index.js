@@ -11,7 +11,9 @@ const consoleLog = function (x) {
 
 function NodePreGypGithub() {}
 
-NodePreGypGithub.prototype.octokit = require('@octokit/rest').Octokit;
+NodePreGypGithub.prototype.octokit = require('@octokit/rest').Octokit.plugin(
+    require('@octokit/plugin-retry').retry
+);
 NodePreGypGithub.prototype.stage_base_dir = path.join(cwd, 'build', 'stage');
 NodePreGypGithub.prototype.init = function () {
     let ownerRepo, hostPrefix;
@@ -63,7 +65,7 @@ NodePreGypGithub.prototype.connect = function () {
             'user-agent': this.package_json.name ? this.package_json.name : 'node-pre-gyp-github'
         }
     });
-}
+};
 
 NodePreGypGithub.prototype.createRelease = async function (args) {
     const options = {
@@ -91,28 +93,14 @@ NodePreGypGithub.prototype.createRelease = async function (args) {
 NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
     const data = await fs.promises.readFile(cfg.filePath);
 
-    let lastErr;
-    let retries = 3;
-    do {
-        try {
-            await this.octokit.repos.uploadReleaseAsset({
-                origin: this.release.upload_url,
-                owner: this.owner,
-                release_id: this.release.id,
-                repo: this.repo,
-                name: cfg.fileName,
-                data
-            });
-            break;
-        } catch (e) {
-            retries--;
-            console.error('Failed uploading ', e);
-            console.error(`${retries} left`);
-            lastErr = e;
-            if (retries > 0) this.connect();
-        }
-    } while (retries > 0);
-    if (retries == 0) throw lastErr;
+    await this.octokit.repos.uploadReleaseAsset({
+        origin: this.release.upload_url,
+        owner: this.owner,
+        release_id: this.release.id,
+        repo: this.repo,
+        name: cfg.fileName,
+        data
+    });
 
     consoleLog(
         'Staged file ' +

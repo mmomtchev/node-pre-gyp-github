@@ -233,21 +233,6 @@ describe('Publishes packages to GitHub Releases', function () {
                     /^Staged file .* found but it already exists in release .*. If you would like to replace it, you must first manually delete it within GitHub./i
                 );
         });
-
-        it('should throw an error when github.releases.uploadAsset returns an error 3 times', function () {
-            const options = {draft: true, verbose: false};
-            reset_mocks();
-            fs.promises.readdir = function () {
-                return Promise.resolve(['filename']);
-            };
-            let counter = 0;
-            octokit.repos.uploadReleaseAsset = function () {
-                counter++;
-                return Promise.reject(new Error('uploadAsset error'));
-            };
-			return expect(index.publish(options)).to.be.rejectedWith('uploadAsset error')
-                .then(() => expect(counter).to.equal(3));
-        });
     });
 
     describe('Verify backwards compatible with any breaking changes made within the same MINOR version.', function () {

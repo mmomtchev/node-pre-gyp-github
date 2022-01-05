@@ -29,6 +29,7 @@
     "releases"
   ],
   "dependencies": {
+    "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^18.11.2",
     "commander": "^8.2.0"
   },
