@@ -90,7 +90,7 @@ NodePreGypGithub.prototype.createRelease = async function (args) {
     return this.octokit.repos.createRelease(options);
 };
 
-NodePreGypGithub.prototype.deletePartialAssets = async function () {
+NodePreGypGithub.prototype.deletePartialAssets = async function (file) {
     try {
         const assets = await this.octokit.repos.listReleaseAssets({
             origin: this.release.upload_url,
@@ -98,7 +98,7 @@ NodePreGypGithub.prototype.deletePartialAssets = async function () {
             release_id: this.release.id,
             repo: this.repo
         });
-        const partial = assets.data.filter((a) => a.state === 'starter');
+        const partial = assets.data.filter((a) => a.state === 'starter' && a.name === file);
         for (const asset of partial)
             await this.octokit.repos.deleteReleaseAsset({
                 origin: this.release.upload_url,
@@ -137,7 +137,7 @@ NodePreGypGithub.prototype.uploadAsset = async function (cfg) {
             console.error(`${retries} left`);
             console.error('');
             lastErr = e;
-            await this.deletePartialAssets();
+            await this.deletePartialAssets(cfg.fileName);
         }
     } while (retries > 0);
     if (retries == 0) throw lastErr;
