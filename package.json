@@ -31,7 +31,7 @@
   "dependencies": {
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^22.0.1",
-    "commander": "^8.2.0"
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.4",
